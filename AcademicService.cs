@@ -21,6 +21,18 @@ namespace Lab1_65_Lapko
             return result;
         }
 
+        public List<Session> GetAllSessions()
+        {
+            var sessionEntities = MockStorage.Sessions;
+            var result = new List<Session>();
+
+            foreach (var entity in sessionEntities)
+            {
+                result.Add(MapToDomain(entity));
+            }
+            return result;
+        }
+
         // Get Details for a specific Subject (including loading sessions)
         public Subject GetSubjectDetails(Guid subjectId)
         {
