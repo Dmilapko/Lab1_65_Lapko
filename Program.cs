@@ -147,7 +147,7 @@ namespace Lab1_65_Lapko
                 string query = parts[2];
                 results = results.Where(r => GetObjectValues(r).Any(v => v.Contains(query)));
             }
-            if (parts.Length > 3 || !hasQuery)
+            if (parts.Length != 2 && (parts.Length > 3 || !hasQuery))
             {
                 //sort by value
                 var parameters = ParseParameters(parts, hasQuery ? 3 : 2);
