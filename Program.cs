@@ -10,6 +10,57 @@ namespace Lab1_65_Lapko
     {
         private static AcademicService _service = new AcademicService();
 
+        static void Main(string[] args)
+        {
+            Hello();
+            while (true)
+            {
+                Console.Write("#");
+                var input = Console.ReadLine();
+                if (string.IsNullOrWhiteSpace(input))
+                    continue;
+
+                var parts = input.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+                var command = parts[0];
+
+                switch (command)
+                {
+                    case "exit":
+                    case "quit":
+                        return;
+
+                    case "h":
+                    case "help":
+                        PrintHelp();
+                        break;
+
+                    case "s":
+                    case "search":
+                        HandleSearch(parts);
+                        break;
+
+                    case "a":
+                    case "add":
+                        HandleAdd(parts);
+                        break;
+
+                    case "u":
+                    case "update":
+                        HandleUpdate(parts);
+                        break;
+
+                    case "d":
+                    case "delete":
+                        HandleDelete(parts);
+                        break;
+
+                    default:
+                        Console.WriteLine($"Unknown command: {command}");
+                        break;
+                }
+            }
+        }
+
         static void Hello()
         {
             Console.WriteLine("Welcome to lab by Lapko Dmytro!");
@@ -21,7 +72,7 @@ namespace Lab1_65_Lapko
             Console.WriteLine("Available commands:");
             Console.WriteLine("help | h - Show this help message");
             Console.WriteLine("exit | quit - Exit the application");
-            Console.WriteLine("s | search [entity?] [query?]");
+            Console.WriteLine("s | search [entity?] [query?] [DESC|ASC=field]");
             Console.WriteLine("a | add [entity] [parameters]");
             Console.WriteLine("u | update [entity] [id] [parameters]");
             Console.WriteLine("d | delete [entity] [id]");
@@ -71,7 +122,7 @@ namespace Lab1_65_Lapko
         {
             if (parts.Length < 2)
             {
-                Console.WriteLine("Usage: search [subject|session] [query?]");
+                Console.WriteLine("Usage: search [subject|session] [query?] [DESC|ASC=field]");
                 return;
             }
 
@@ -90,10 +141,32 @@ namespace Lab1_65_Lapko
                 Console.WriteLine($"Unknown entity: {entity}");
                 return;
             }
-            if (parts.Length > 2)
+            bool hasQuery = parts.Length > 2 && !(parts[2].StartsWith("DESC=") || parts[2].StartsWith("ASC="));
+            if (parts.Length > 2 && hasQuery)
             {
                 string query = parts[2];
                 results = results.Where(r => GetObjectValues(r).Any(v => v.Contains(query)));
+            }
+            if (parts.Length > 3 || !hasQuery)
+            {
+                //sort by value
+                var parameters = ParseParameters(parts, hasQuery ? 3 : 2);
+                if (parameters.Count == 0)
+                {
+                    Console.WriteLine("Expected DESC=name or ASC=name for sorting");
+                    return;
+                }
+                var sortParam = parameters[0];
+                if (sortParam.Key.StartsWith("DESC"))
+                {
+                    string propName = sortParam.Value;
+                    results = results.OrderByDescending(r => r.GetType().GetProperty(propName)?.GetValue(r)?.ToString());
+                }
+                else if (sortParam.Key.StartsWith("ASC"))
+                {
+                    string propName = sortParam.Value;
+                    results = results.OrderBy(r => r.GetType().GetProperty(propName)?.GetValue(r)?.ToString());
+                }
             }
             PrintPythonStyle(results);
         }
@@ -271,57 +344,6 @@ namespace Lab1_65_Lapko
             else
             {
                 Console.WriteLine("Invalid ID format.");
-            }
-        }
-
-        static void Main(string[] args)
-        {
-            Hello();
-            while (true)
-            {
-                Console.Write("#");
-                var input = Console.ReadLine();
-                if (string.IsNullOrWhiteSpace(input))
-                    continue;
-
-                var parts = input.Split(' ', StringSplitOptions.RemoveEmptyEntries);
-                var command = parts[0];
-
-                switch (command)
-                {
-                    case "exit":
-                    case "quit":
-                        return;
-
-                    case "h":
-                    case "help":
-                        PrintHelp();
-                        break;
-
-                    case "s":
-                    case "search":
-                        HandleSearch(parts);
-                        break;
-
-                    case "a":
-                    case "add":
-                        HandleAdd(parts);
-                        break;
-
-                    case "u":
-                    case "update":
-                        HandleUpdate(parts);
-                        break;
-
-                    case "d":
-                    case "delete":
-                        HandleDelete(parts);
-                        break;
-
-                    default:
-                        Console.WriteLine($"Unknown command: {command}");
-                        break;
-                }
             }
         }
     }
