@@ -23,14 +23,21 @@ namespace Lab1_65_Lapko
             Console.WriteLine("d | delete [entity] [id]");
         }
 
+        static List<string> GetObjectValues<T>(T item)
+        {
+            return item.GetType().GetProperties()
+                .Select(p => $"{p.GetValue(item)}")
+                .ToList();
+        }
+
         static void PrintPythonStyle<T>(IEnumerable<T> items)
         {
             var list = items.ToList();
 
             foreach (var item in list)
             {
-                var type = typeof(T).Name;
-                var props = typeof(T).GetProperties();
+                var type = item.GetType();
+                var props = type.GetProperties();
                 var fields = string.Join("\n    ", props.Select(p => $"'{p.Name}': '{p.GetValue(item)}'"));
                 Console.WriteLine($"{type}: \n    {fields}  \n");
             }
@@ -45,21 +52,26 @@ namespace Lab1_65_Lapko
             }
 
             string entity = parts[1];
-
+            IEnumerable<object> results;
             if (entity == "subject")
             {
-                var results = _service.GetAllSubjects();
-                PrintPythonStyle(results);
+                results = _service.GetAllSubjects();
             }
             else if (entity == "session")
             {
-                var results = _service.GetAllSessions();
-                PrintPythonStyle(results);
+                results = _service.GetAllSessions();
             }
             else
             {
                 Console.WriteLine($"Unknown entity: {entity}");
+                return;
             }
+            if (parts.Length > 2)
+            {
+                string query = parts[2];
+                results = results.Where(r => GetObjectValues(r).Any(v => v.Contains(query)));
+            }
+            PrintPythonStyle(results);
         }
 
         static void Main(string[] args)
