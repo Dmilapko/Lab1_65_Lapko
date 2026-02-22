@@ -100,7 +100,7 @@ namespace Lab1_65_Lapko
         {
             foreach (var param in parameters)
             {
-                var prop = obj.GetType().GetProperty(param.Key, System.Reflection.BindingFlags.IgnoreCase | System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance);
+                var prop = obj.GetType().GetProperty(param.Key, System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance);
                 if (prop != null)
                 {
                     try
