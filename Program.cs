@@ -1,4 +1,6 @@
-﻿using System.IO;
+﻿using System.ComponentModel;
+using System.IO;
+using System.Reflection;
 using System.Runtime.InteropServices.ObjectiveC;
 using System.Text;
 
@@ -98,19 +100,54 @@ namespace Lab1_65_Lapko
 
         static void FillObjectFromParameters<T>(T obj, List<KeyValuePair<string, string>> parameters)
         {
+            if (obj == null) return;
+
             foreach (var param in parameters)
             {
                 var prop = obj.GetType().GetProperty(param.Key, System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance);
+
                 if (prop != null)
                 {
                     try
                     {
-                        var convertedValue = Convert.ChangeType(param.Value, prop.PropertyType);
+                        string rawValue = param.Value;
+                        Type targetType = prop.PropertyType;
+
+                        // Get the underlying type e.g. int? -> int
+                        Type underlyingType = Nullable.GetUnderlyingType(targetType) ?? targetType;
+
+                        object convertedValue = null;
+
+                        if (!string.IsNullOrEmpty(rawValue))
+                        {
+                            // 1. Try to find a constructor that takes a single string argument
+                            var constructor = underlyingType.GetConstructor(new[] { typeof(string) });
+
+                            if (constructor != null)
+                            {
+                                convertedValue = constructor.Invoke(new object[] { rawValue });
+                            }
+                            // 2. Fallback: Handle Enums (they don't have constructors)
+                            else if (underlyingType.IsEnum)
+                            {
+                                convertedValue = Enum.Parse(underlyingType, rawValue, true);
+                            }
+                            // 3. Fallback: Use TypeConverter (handles primitives like int, bool, and Guid)
+                            else
+                            {
+                                var converter = TypeDescriptor.GetConverter(underlyingType);
+                                if (converter != null && converter.CanConvertFrom(typeof(string)))
+                                {
+                                    convertedValue = converter.ConvertFromString(rawValue);
+                                }
+                            }
+                        }
+
                         prop.SetValue(obj, convertedValue);
                     }
-                    catch
+                    catch (Exception ex)
                     {
-                        Console.WriteLine($"Failed to set property {param.Key} with value {param.Value}");
+                        Console.WriteLine($"Failed to set {param.Key}: {ex.InnerException?.Message ?? ex.Message}");
                     }
                 }
             }
