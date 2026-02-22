@@ -55,6 +55,12 @@ namespace Lab1_65_Lapko
                 {
                     parameters.Add(new KeyValuePair<string, string>(paramParts[0], paramParts[1]));
                 }
+                else
+                {
+                    Console.WriteLine($"Invalid parameter format: {parts[i]}");
+                    Console.WriteLine("Expected format: key=value");
+                    return new List<KeyValuePair<string, string>>();
+                }
             }
             return parameters;
         }
@@ -112,9 +118,9 @@ namespace Lab1_65_Lapko
 
         static void HandleAdd(string[] parts)
         {
-            if (parts.Length < 2)
+            if (parts.Length < 3)
             {
-                Console.WriteLine("Usage: add [subject|session]");
+                Console.WriteLine("Usage: add [subject|session] [parameters]");
                 return;
             }
 
@@ -135,6 +141,8 @@ namespace Lab1_65_Lapko
                 return;
             }
             var parameters = ParseParameters(parts, 2);
+            if (parameters.Count == 0)
+                return;
             FillObjectFromParameters(newObj, parameters);
 
             if (entity == "subject")
@@ -184,9 +192,9 @@ namespace Lab1_65_Lapko
 
         static void HandleUpdate(string[] parts)
         {
-            if (parts.Length < 3)
+            if (parts.Length < 4)
             {
-                Console.WriteLine("Usage: update [subject|session] [id]");
+                Console.WriteLine("Usage: update [subject|session] [id] [parameters]");
                 return;
             }
 
@@ -194,6 +202,8 @@ namespace Lab1_65_Lapko
             if (Guid.TryParse(parts[2], out Guid id))
             {
                 var parameters = ParseParameters(parts, 3);
+                if (parameters.Count == 0)
+                    return;
                 object template = null;
                 if (entity == "subject")
                 {
@@ -256,12 +266,17 @@ namespace Lab1_65_Lapko
                         HandleSearch(parts);
                         break;
 
+                    case "a":
                     case "add":
                         HandleAdd(parts);
                         break;
+
+                    case "u":
                     case "update":
                         HandleUpdate(parts);
                         break;
+
+                    case "d":
                     case "delete":
                         HandleDelete(parts);
                         break;
