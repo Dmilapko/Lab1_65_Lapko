@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using System.Runtime.InteropServices.ObjectiveC;
+using System.Text;
 
 namespace Lab1_65_Lapko
 {
@@ -141,6 +142,11 @@ namespace Lab1_65_Lapko
                 _service.AddSubject((Subject)newObj);
                 Console.WriteLine("Subject added.");
             }
+            else if (entity == "session")
+            {
+                _service.AddSession((Session)newObj);
+                Console.WriteLine("Session added.");
+            }
         }
 
         static void HandleDelete(string[] parts)
@@ -154,7 +160,20 @@ namespace Lab1_65_Lapko
             string entity = parts[1];
             if (Guid.TryParse(parts[2], out Guid id))
             {
-                bool success = (entity == "subject") ? _service.DeleteSubject(id) : false;
+                bool success = false;
+                if (entity == "subject")
+                {
+                    success = _service.DeleteSubject(id);
+                }
+                else if (entity == "session")
+                {
+                    success = _service.DeleteSession(id);
+                }
+                else
+                {
+                    Console.WriteLine($"Unknown entity: {entity}");
+                    return;
+                }
                 Console.WriteLine(success ? "Deleted successfully." : "Item not found.");
             }
             else
@@ -175,14 +194,36 @@ namespace Lab1_65_Lapko
             if (Guid.TryParse(parts[2], out Guid id))
             {
                 var parameters = ParseParameters(parts, 3);
+                object template = null;
                 if (entity == "subject")
                 {
-                    Subject template = new Subject();
-                    FillObjectFromParameters(template, parameters);
+                    template = new Subject();
+                }
+                else if (entity == "session")
+                {
+                    template = new Session();
+                }
+                else
+                {
+                    Console.WriteLine($"Unknown entity: {entity}");
+                    return;
+                }
+                FillObjectFromParameters(template, parameters);
 
-                    bool success = _service.UpdateSubject(id, template);
+                if (entity == "subject")
+                {
+                    bool success = _service.UpdateSubject(id, (Subject)template);
                     Console.WriteLine(success ? "Updated." : "Error updating.");
                 }
+                else if (entity == "session")
+                {
+                    bool success = _service.UpdateSession(id, (Session)template);
+                    Console.WriteLine(success ? "Updated." : "Error updating.");
+                }
+            }
+            else
+            {
+                Console.WriteLine("Invalid ID format.");
             }
         }
 

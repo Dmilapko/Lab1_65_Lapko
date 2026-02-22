@@ -112,5 +112,46 @@ namespace Lab1_65_Lapko
             MockStorage.Subjects.Remove(entity);
             return true;
         }
+
+        public void AddSession(Session session)
+        {
+            MockStorage.Sessions.Add(new SessionEntity
+            {
+                Id = Guid.NewGuid(),
+                SubjectId = session.SubjectId,
+                Date = session.Date,
+                StartTime = session.StartTime,
+                EndTime = session.EndTime,
+                Topic = session.Topic,
+                Type = session.Type
+            });
+        }
+
+        public bool UpdateSession(Guid id, Session templateSession)
+        {
+            var entity = MockStorage.Sessions.FirstOrDefault(s => s.Id == id);
+            if (entity == null) return false;
+            if (templateSession.SubjectId != Guid.Empty)
+                entity.SubjectId = templateSession.SubjectId;
+            if (templateSession.Date != default)
+                entity.Date = templateSession.Date;
+            if (templateSession.StartTime != default)
+                entity.StartTime = templateSession.StartTime;
+            if (templateSession.EndTime != default)
+                entity.EndTime = templateSession.EndTime;
+            if (templateSession.Topic != null)
+                entity.Topic = templateSession.Topic;
+            if (templateSession.Type != 0)
+                entity.Type = templateSession.Type;
+            return true;
+        }
+
+        public bool DeleteSession(Guid id)
+        {
+            var entity = MockStorage.Sessions.FirstOrDefault(s => s.Id == id);
+            if (entity == null) return false;
+            MockStorage.Sessions.Remove(entity);
+            return true;
+        }
     }
 }
