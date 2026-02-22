@@ -72,5 +72,45 @@ namespace Lab1_65_Lapko
                 Type = entity.Type
             };
         }
+
+
+        public void AddSubject(Subject subject)
+        {
+            MockStorage.Subjects.Add(new SubjectEntity
+            {
+                Id = Guid.NewGuid(),
+                Name = subject.Name,
+                EctsCredits = subject.EctsCredits,
+                Area = subject.Area
+            });
+        }
+
+        public bool UpdateSubject(Guid id, Subject templateSubjct)
+        {
+            var entity = MockStorage.Subjects.FirstOrDefault(s => s.Id == id);
+            if (entity == null) return false;
+
+            if (templateSubjct.Name != null)
+                entity.Name = templateSubjct.Name;
+
+            if (templateSubjct.EctsCredits != 0)
+                entity.EctsCredits = templateSubjct.EctsCredits;
+
+            if (templateSubjct.Area != 0)
+                entity.Area = templateSubjct.Area;
+
+            return true;
+        }
+
+        public bool DeleteSubject(Guid id)
+        {
+            var entity = MockStorage.Subjects.FirstOrDefault(s => s.Id == id);
+            if (entity == null) return false;
+
+            // Sessions cannot exist without a subject
+            MockStorage.Sessions.RemoveAll(s => s.SubjectId == id);
+            MockStorage.Subjects.Remove(entity);
+            return true;
+        }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using System.Runtime.InteropServices.ObjectiveC;
 
 namespace Lab1_65_Lapko
 {
@@ -43,6 +44,20 @@ namespace Lab1_65_Lapko
             }
         }
 
+        static List<KeyValuePair<string, string>> ParseParameters(string[] parts, int startIdx)
+        {
+            var parameters = new List<KeyValuePair<string, string>>();
+            for (int i = startIdx; i < parts.Length; i++)
+            {
+                var paramParts = parts[i].Split('=');
+                if (paramParts.Length == 2)
+                {
+                    parameters.Add(new KeyValuePair<string, string>(paramParts[0], paramParts[1]));
+                }
+            }
+            return parameters;
+        }
+
         static void HandleSearch(string[] parts)
         {
             if (parts.Length < 2)
@@ -74,6 +89,103 @@ namespace Lab1_65_Lapko
             PrintPythonStyle(results);
         }
 
+        static void FillObjectFromParameters<T>(T obj, List<KeyValuePair<string, string>> parameters)
+        {
+            foreach (var param in parameters)
+            {
+                var prop = obj.GetType().GetProperty(param.Key, System.Reflection.BindingFlags.IgnoreCase | System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance);
+                if (prop != null)
+                {
+                    try
+                    {
+                        var convertedValue = Convert.ChangeType(param.Value, prop.PropertyType);
+                        prop.SetValue(obj, convertedValue);
+                    }
+                    catch
+                    {
+                        Console.WriteLine($"Failed to set property {param.Key} with value {param.Value}");
+                    }
+                }
+            }
+        }
+
+        static void HandleAdd(string[] parts)
+        {
+            if (parts.Length < 2)
+            {
+                Console.WriteLine("Usage: add [subject|session]");
+                return;
+            }
+
+            string entity = parts[1].ToLower();
+            object newObj = null;
+
+            if (entity == "subject")
+            {
+                newObj = new Subject();
+            }
+            else if (entity == "session")
+            {
+                newObj = new Session();
+            }
+            else
+            {
+                Console.WriteLine($"Unknown entity: {entity}");
+                return;
+            }
+            var parameters = ParseParameters(parts, 2);
+            FillObjectFromParameters(newObj, parameters);
+
+            if (entity == "subject")
+            {
+                _service.AddSubject((Subject)newObj);
+                Console.WriteLine("Subject added.");
+            }
+        }
+
+        static void HandleDelete(string[] parts)
+        {
+            if (parts.Length < 3)
+            {
+                Console.WriteLine("Usage: delete [subject|session] [id]");
+                return;
+            }
+
+            string entity = parts[1];
+            if (Guid.TryParse(parts[2], out Guid id))
+            {
+                bool success = (entity == "subject") ? _service.DeleteSubject(id) : false;
+                Console.WriteLine(success ? "Deleted successfully." : "Item not found.");
+            }
+            else
+            {
+                Console.WriteLine("Invalid ID format.");
+            }
+        }
+
+        static void HandleUpdate(string[] parts)
+        {
+            if (parts.Length < 3)
+            {
+                Console.WriteLine("Usage: update [subject|session] [id]");
+                return;
+            }
+
+            string entity = parts[1].ToLower();
+            if (Guid.TryParse(parts[2], out Guid id))
+            {
+                var parameters = ParseParameters(parts, 3);
+                if (entity == "subject")
+                {
+                    Subject template = new Subject();
+                    FillObjectFromParameters(template, parameters);
+
+                    bool success = _service.UpdateSubject(id, template);
+                    Console.WriteLine(success ? "Updated." : "Error updating.");
+                }
+            }
+        }
+
         static void Main(string[] args)
         {
             Hello();
@@ -101,6 +213,16 @@ namespace Lab1_65_Lapko
                     case "s":
                     case "search":
                         HandleSearch(parts);
+                        break;
+
+                    case "add":
+                        HandleAdd(parts);
+                        break;
+                    case "update":
+                        HandleUpdate(parts);
+                        break;
+                    case "delete":
+                        HandleDelete(parts);
                         break;
 
                     default:
