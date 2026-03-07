@@ -1,8 +1,8 @@
 ﻿using System.ComponentModel;
 using System.IO;
 using System.Reflection;
-using System.Runtime.InteropServices.ObjectiveC;
 using System.Text;
+using Lab1_65_Lapko.Core;
 
 namespace Lab1_65_Lapko
 {
