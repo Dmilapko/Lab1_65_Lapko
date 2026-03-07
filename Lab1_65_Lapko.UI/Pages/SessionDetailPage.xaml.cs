@@ -4,9 +4,10 @@ namespace Lab1_65_Lapko.UI.Pages
 {
     public partial class SessionDetailPage : ContentPage
     {
-        public SessionDetailPage()
+        public SessionDetailPage(Session session)
         {
             InitializeComponent();
+            BindingContext = session;
         }
     }
 }
