@@ -1,8 +1,10 @@
-namespace Lab1_65_Lapko.Core
+using Lab1_65_Lapko.Data;
+
+namespace Lab1_65_Lapko.Models
 {
     public class Subject
     {
-        public Guid Id { get; set; }
+        public Guid Id { get; init; }
         public string Name { get; set; }
         public int EctsCredits { get; set; }
         public KnowledgeArea Area { get; set; }

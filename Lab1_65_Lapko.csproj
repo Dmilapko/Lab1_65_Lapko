@@ -11,13 +11,23 @@
     <Compile Remove="Lab1_65_Lapko.Core\**" />
     <EmbeddedResource Remove="Lab1_65_Lapko.Core\**" />
     <None Remove="Lab1_65_Lapko.Core\**" />
+    <Compile Remove="Lab1_65_Lapko.Data\**" />
+    <EmbeddedResource Remove="Lab1_65_Lapko.Data\**" />
+    <None Remove="Lab1_65_Lapko.Data\**" />
+    <Compile Remove="Lab1_65_Lapko.Models\**" />
+    <EmbeddedResource Remove="Lab1_65_Lapko.Models\**" />
+    <None Remove="Lab1_65_Lapko.Models\**" />
+    <Compile Remove="Lab1_65_Lapko.Services\**" />
+    <EmbeddedResource Remove="Lab1_65_Lapko.Services\**" />
+    <None Remove="Lab1_65_Lapko.Services\**" />
     <Compile Remove="Lab1_65_Lapko.UI\**" />
     <EmbeddedResource Remove="Lab1_65_Lapko.UI\**" />
     <None Remove="Lab1_65_Lapko.UI\**" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="Lab1_65_Lapko.Core\Lab1_65_Lapko.Core.csproj" />
+    <ProjectReference Include="Lab1_65_Lapko.Models\Lab1_65_Lapko.Models.csproj" />
+    <ProjectReference Include="Lab1_65_Lapko.Services\Lab1_65_Lapko.Services.csproj" />
   </ItemGroup>
 
 </Project>

@@ -1,0 +1,14 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Lab1_65_Lapko.Data\Lab1_65_Lapko.Data.csproj" />
+    <ProjectReference Include="..\Lab1_65_Lapko.Models\Lab1_65_Lapko.Models.csproj" />
+  </ItemGroup>
+
+</Project>

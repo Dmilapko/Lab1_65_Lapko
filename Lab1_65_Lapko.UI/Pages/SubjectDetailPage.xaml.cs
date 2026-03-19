@@ -1,4 +1,4 @@
-using Lab1_65_Lapko.Core;
+using Lab1_65_Lapko.Models;
 
 namespace Lab1_65_Lapko.UI.Pages
 {

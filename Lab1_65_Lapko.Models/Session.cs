@@ -1,8 +1,10 @@
-namespace Lab1_65_Lapko.Core
+using Lab1_65_Lapko.Data;
+
+namespace Lab1_65_Lapko.Models
 {
     public class Session
     {
-        public Guid Id { get; set; }
+        public Guid Id { get; init; }
         public Guid SubjectId { get; set; }
         public DateOnly Date { get; set; }
         public TimeOnly StartTime { get; set; }

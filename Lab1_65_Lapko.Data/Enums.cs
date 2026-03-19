@@ -1,4 +1,4 @@
-namespace Lab1_65_Lapko.Core
+namespace Lab1_65_Lapko.Data
 {
     public enum KnowledgeArea
     {

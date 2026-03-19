@@ -1,15 +1,10 @@
-namespace Lab1_65_Lapko.Core
+namespace Lab1_65_Lapko.Data
 {
     public class SubjectEntity
     {
-        public Guid Id { get; set; }
+        public Guid Id { get; init; } = Guid.NewGuid();
         public string Name { get; set; }
         public int EctsCredits { get; set; }
         public KnowledgeArea Area { get; set; }
-
-        public SubjectEntity()
-        {
-            Id = Guid.NewGuid();
-        }
     }
 }

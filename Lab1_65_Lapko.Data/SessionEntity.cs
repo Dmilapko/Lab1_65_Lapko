@@ -1,18 +1,13 @@
-namespace Lab1_65_Lapko.Core
+namespace Lab1_65_Lapko.Data
 {
     public class SessionEntity
     {
-        public Guid Id { get; set; }
-        public Guid SubjectId { get; set; } // Foreign Key equivalent
+        public Guid Id { get; init; } = Guid.NewGuid();
+        public Guid SubjectId { get; set; }
         public DateOnly Date { get; set; }
         public TimeOnly StartTime { get; set; }
         public TimeOnly EndTime { get; set; }
         public string Topic { get; set; }
         public SessionType Type { get; set; }
-
-        public SessionEntity()
-        {
-            Id = Guid.NewGuid();
-        }
     }
 }

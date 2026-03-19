@@ -1,4 +1,6 @@
-namespace Lab1_65_Lapko.Core
+using Lab1_65_Lapko.Data;
+
+namespace Lab1_65_Lapko.Services
 {
     public static class MockStorage
     {
