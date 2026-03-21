@@ -14,9 +14,9 @@
             <BoxView HeightRequest="1" Color="LightGray" Margin="0,8" />
             <Label Text="Sessions" FontSize="20" FontAttributes="Bold" />
 
-            <CollectionView x:Name="SessionsCollection"
-                            SelectionMode="Single"
-                            SelectionChanged="OnSessionSelected">
+            <CollectionView ItemsSource="{Binding Sessions}"
+                            SelectedItem="{Binding SelectedSession, Mode=TwoWay}"
+                            SelectionMode="Single">
                 <CollectionView.ItemTemplate>
                     <DataTemplate>
                         <Border Stroke="LightGray" StrokeThickness="1"

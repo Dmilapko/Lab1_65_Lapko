@@ -24,7 +24,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Lab1_65_Lapko.Models\Lab1_65_Lapko.Models.csproj" />
     <ProjectReference Include="..\Lab1_65_Lapko.Services\Lab1_65_Lapko.Services.csproj" />
   </ItemGroup>
 

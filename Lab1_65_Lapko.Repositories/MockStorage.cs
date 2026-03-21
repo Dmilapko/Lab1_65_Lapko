@@ -1,6 +1,6 @@
-using Lab1_65_Lapko.Data;
+using Lab1_65_Lapko.Repositories.Models;
 
-namespace Lab1_65_Lapko.Services
+namespace Lab1_65_Lapko.Repositories
 {
     public static class MockStorage
     {

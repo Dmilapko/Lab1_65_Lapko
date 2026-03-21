@@ -1,13 +1,14 @@
-using Lab1_65_Lapko.Models;
+using Lab1_65_Lapko.UI.ViewModels;
+using Lab1_65_Lapko.Services;
 
 namespace Lab1_65_Lapko.UI.Pages
 {
     public partial class SessionDetailPage : ContentPage
     {
-        public SessionDetailPage(Session session)
+        public SessionDetailPage(IAcademicService academicService, Guid sessionId)
         {
             InitializeComponent();
-            BindingContext = session;
+            BindingContext = new SessionDetailViewModel(academicService, sessionId);
         }
     }
 }

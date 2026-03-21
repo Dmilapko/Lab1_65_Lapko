@@ -3,9 +3,9 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="Lab1_65_Lapko.UI.Pages.SubjectsPage"
              Title="Subjects">
-    <CollectionView x:Name="SubjectsCollection"
-                    SelectionMode="Single"
-                    SelectionChanged="OnSubjectSelected">
+    <CollectionView ItemsSource="{Binding Subjects}"
+                    SelectedItem="{Binding SelectedSubject, Mode=TwoWay}"
+                    SelectionMode="Single">
         <CollectionView.ItemTemplate>
             <DataTemplate>
                 <Border Stroke="LightGray" StrokeThickness="1"

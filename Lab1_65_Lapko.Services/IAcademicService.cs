@@ -1,4 +1,4 @@
-using Lab1_65_Lapko.Models;
+using Lab1_65_Lapko.Services.DTOs;
 
 namespace Lab1_65_Lapko.Services
 {
@@ -7,13 +7,8 @@ namespace Lab1_65_Lapko.Services
     /// </summary>
     public interface IAcademicService
     {
-        List<Subject> GetAllSubjects();
-        List<Session> GetAllSessions();
-        void AddSubject(Subject subject);
-        bool UpdateSubject(Guid id, Subject templateSubject);
-        bool DeleteSubject(Guid id);
-        void AddSession(Session session);
-        bool UpdateSession(Guid id, Session templateSession);
-        bool DeleteSession(Guid id);
+        List<SubjectListDto> GetAllSubjects();
+        SubjectDetailDto? GetSubjectDetail(Guid id);
+        SessionDetailDto? GetSessionDetail(Guid id);
     }
 }

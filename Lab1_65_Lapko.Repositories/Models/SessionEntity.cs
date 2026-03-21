@@ -1,4 +1,4 @@
-namespace Lab1_65_Lapko.Data
+namespace Lab1_65_Lapko.Repositories.Models
 {
     public class SessionEntity
     {

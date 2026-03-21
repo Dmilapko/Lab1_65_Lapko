@@ -1,144 +1,87 @@
-using Lab1_65_Lapko.Data;
-using Lab1_65_Lapko.Models;
+using Lab1_65_Lapko.Repositories;
+using Lab1_65_Lapko.Repositories.Models;
+using Lab1_65_Lapko.Services.DTOs;
 
 namespace Lab1_65_Lapko.Services
 {
     public class AcademicService : IAcademicService
     {
-        // Get all Subjects (Parent Level)
-        public List<Subject> GetAllSubjects()
-        {
-            var subjectEntities = MockStorage.Subjects;
-            var result = new List<Subject>();
+        private readonly ISubjectRepository _subjectRepository;
+        private readonly ISessionRepository _sessionRepository;
 
-            foreach (var entity in subjectEntities)
-            {
-                result.Add(MapToDomain(entity));
-            }
-            return result;
+        public AcademicService(ISubjectRepository subjectRepository, ISessionRepository sessionRepository)
+        {
+            _subjectRepository = subjectRepository;
+            _sessionRepository = sessionRepository;
         }
 
-        public List<Session> GetAllSessions()
+        public List<SubjectListDto> GetAllSubjects()
         {
-            var sessionEntities = MockStorage.Sessions;
-            var result = new List<Session>();
-
-            foreach (var entity in sessionEntities)
-            {
-                result.Add(MapToDomain(entity));
-            }
-            return result;
+            return _subjectRepository.GetAll()
+                .Select(e => new SubjectListDto
+                {
+                    Id = e.Id,
+                    Name = e.Name,
+                    EctsCredits = e.EctsCredits,
+                    Area = e.Area.ToString()
+                })
+                .ToList();
         }
 
-        // Mappers
-        private Subject MapToDomain(SubjectEntity entity)
+        public SubjectDetailDto? GetSubjectDetail(Guid id)
         {
-            return new Subject
+            var entity = _subjectRepository.GetById(id);
+            if (entity == null) return null;
+
+            var sessions = _sessionRepository.GetBySubjectId(id);
+            var sessionDtos = sessions.Select(MapToSessionListDto).ToList();
+
+            var totalDuration = TimeSpan.Zero;
+            foreach (var s in sessions)
+            {
+                totalDuration += s.EndTime - s.StartTime;
+            }
+
+            return new SubjectDetailDto
             {
                 Id = entity.Id,
                 Name = entity.Name,
                 EctsCredits = entity.EctsCredits,
-                Area = entity.Area,
-                Sessions = MockStorage.Sessions
-                    .Where(s => s.SubjectId == entity.Id)
-                    .Select(MapToDomain)
-                    .ToList()
+                Area = entity.Area.ToString(),
+                TotalDuration = totalDuration,
+                Sessions = sessionDtos
             };
         }
 
-        private Session MapToDomain(SessionEntity entity)
+        public SessionDetailDto? GetSessionDetail(Guid id)
         {
-            return new Session
+            var entity = _sessionRepository.GetById(id);
+            if (entity == null) return null;
+
+            return new SessionDetailDto
             {
                 Id = entity.Id,
                 SubjectId = entity.SubjectId,
+                Topic = entity.Topic,
+                Type = entity.Type.ToString(),
                 Date = entity.Date,
                 StartTime = entity.StartTime,
                 EndTime = entity.EndTime,
-                Topic = entity.Topic,
-                Type = entity.Type
+                Duration = entity.EndTime - entity.StartTime
             };
         }
 
-
-        public void AddSubject(Subject subject)
+        private SessionListDto MapToSessionListDto(SessionEntity entity)
         {
-            MockStorage.Subjects.Add(new SubjectEntity
+            return new SessionListDto
             {
-                Id = Guid.NewGuid(),
-                Name = subject.Name,
-                EctsCredits = subject.EctsCredits,
-                Area = subject.Area
-            });
-        }
-
-        public bool UpdateSubject(Guid id, Subject templateSubjct)
-        {
-            var entity = MockStorage.Subjects.FirstOrDefault(s => s.Id == id);
-            if (entity == null) return false;
-
-            if (templateSubjct.Name != null)
-                entity.Name = templateSubjct.Name;
-
-            if (templateSubjct.EctsCredits != 0)
-                entity.EctsCredits = templateSubjct.EctsCredits;
-
-            if (templateSubjct.Area != 0)
-                entity.Area = templateSubjct.Area;
-
-            return true;
-        }
-
-        public bool DeleteSubject(Guid id)
-        {
-            var entity = MockStorage.Subjects.FirstOrDefault(s => s.Id == id);
-            if (entity == null) return false;
-
-            // Sessions cannot exist without a subject
-            MockStorage.Sessions.RemoveAll(s => s.SubjectId == id);
-            MockStorage.Subjects.Remove(entity);
-            return true;
-        }
-
-        public void AddSession(Session session)
-        {
-            MockStorage.Sessions.Add(new SessionEntity
-            {
-                Id = Guid.NewGuid(),
-                SubjectId = session.SubjectId,
-                Date = session.Date,
-                StartTime = session.StartTime,
-                EndTime = session.EndTime,
-                Topic = session.Topic,
-                Type = session.Type
-            });
-        }
-
-        public bool UpdateSession(Guid id, Session templateSession)
-        {
-            var entity = MockStorage.Sessions.FirstOrDefault(s => s.Id == id);
-            if (entity == null) return false;
-            if (templateSession.SubjectId != Guid.Empty)
-                entity.SubjectId = templateSession.SubjectId;
-            if (templateSession.Date != default)
-                entity.Date = templateSession.Date;
-            if (templateSession.StartTime != default)
-                entity.StartTime = templateSession.StartTime;
-            if (templateSession.EndTime != default)
-                entity.EndTime = templateSession.EndTime;
-            if (templateSession.Topic != null)
-                entity.Topic = templateSession.Topic;
-            if (templateSession.Type != 0)
-                entity.Type = templateSession.Type;
-            return true;
-        }
-
-        public bool DeleteSession(Guid id)
-        {
-            var entity = MockStorage.Sessions.FirstOrDefault(s => s.Id == id);
-            if (entity == null) return false;
-            MockStorage.Sessions.Remove(entity);
-            return true;
+                Id = entity.Id,
+                Topic = entity.Topic,
+                Type = entity.Type.ToString(),
+                Date = entity.Date,
+                StartTime = entity.StartTime,
+                EndTime = entity.EndTime
+            };
         }
     }
 }
