@@ -4,14 +4,21 @@ namespace Lab1_65_Lapko.Repositories
 {
     public class SubjectRepository : ISubjectRepository
     {
-        public List<SubjectEntity> GetAll()
+        private readonly JsonDataStore _store;
+
+        public SubjectRepository(JsonDataStore store)
         {
-            return MockStorage.Subjects;
+            _store = store;
         }
 
-        public SubjectEntity? GetById(Guid id)
-        {
-            return MockStorage.Subjects.FirstOrDefault(s => s.Id == id);
-        }
+        public Task<List<SubjectEntity>> GetAllAsync() => _store.GetAllSubjectsAsync();
+
+        public Task<SubjectEntity?> GetByIdAsync(Guid id) => _store.GetSubjectByIdAsync(id);
+
+        public Task AddAsync(SubjectEntity subject) => _store.AddSubjectAsync(subject);
+
+        public Task<bool> UpdateAsync(SubjectEntity subject) => _store.UpdateSubjectAsync(subject);
+
+        public Task<bool> DeleteAsync(Guid id) => _store.DeleteSubjectAsync(id);
     }
 }

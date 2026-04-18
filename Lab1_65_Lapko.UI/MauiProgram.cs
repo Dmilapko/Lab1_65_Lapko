@@ -12,14 +12,18 @@ namespace Lab1_65_Lapko.UI
             builder
                 .UseMauiApp<App>();
 
-            // Register repositories (DI / IoC)
+            // Storage
+            var dataPath = Path.Combine(FileSystem.Current.AppDataDirectory, "academic.json");
+            builder.Services.AddSingleton(sp => new JsonDataStore(dataPath));
+
+            // Repositories
             builder.Services.AddSingleton<ISubjectRepository, SubjectRepository>();
             builder.Services.AddSingleton<ISessionRepository, SessionRepository>();
 
-            // Register services
+            // Services
             builder.Services.AddSingleton<IAcademicService, AcademicService>();
 
-            // Register pages for DI
+            // Pages
             builder.Services.AddTransient<SubjectsPage>();
 
             return builder.Build();

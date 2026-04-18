@@ -8,13 +8,21 @@ namespace Lab1_65_Lapko.UI.ViewModels
     {
         private readonly IAcademicService _academicService;
         private readonly INavigation _navigation;
+        private readonly Guid _subjectId;
+
+        private Guid _id;
+        private string _name = string.Empty;
+        private int _ectsCredits;
+        private string _area = string.Empty;
+        private TimeSpan _totalDuration;
         private SessionListDto? _selectedSession;
 
-        public Guid Id { get; private set; }
-        public string Name { get; private set; } = string.Empty;
-        public int EctsCredits { get; private set; }
-        public string Area { get; private set; } = string.Empty;
-        public TimeSpan TotalDuration { get; private set; }
+        public Guid Id { get => _id; private set => SetProperty(ref _id, value); }
+        public string Name { get => _name; private set => SetProperty(ref _name, value); }
+        public int EctsCredits { get => _ectsCredits; private set => SetProperty(ref _ectsCredits, value); }
+        public string Area { get => _area; private set => SetProperty(ref _area, value); }
+        public TimeSpan TotalDuration { get => _totalDuration; private set => SetProperty(ref _totalDuration, value); }
+
         public ObservableCollection<SessionListDto> Sessions { get; } = new();
 
         public SessionListDto? SelectedSession
@@ -34,12 +42,12 @@ namespace Lab1_65_Lapko.UI.ViewModels
         {
             _academicService = academicService;
             _navigation = navigation;
-            LoadSubject(subjectId);
+            _subjectId = subjectId;
         }
 
-        private void LoadSubject(Guid subjectId)
+        public async Task LoadAsync()
         {
-            var detail = _academicService.GetSubjectDetail(subjectId);
+            var detail = await _academicService.GetSubjectDetailAsync(_subjectId);
             if (detail == null) return;
 
             Id = detail.Id;

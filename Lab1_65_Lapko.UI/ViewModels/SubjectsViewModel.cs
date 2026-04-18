@@ -1,5 +1,4 @@
 using System.Collections.ObjectModel;
-using System.Windows.Input;
 using Lab1_65_Lapko.Services;
 using Lab1_65_Lapko.Services.DTOs;
 
@@ -30,13 +29,13 @@ namespace Lab1_65_Lapko.UI.ViewModels
         {
             _academicService = academicService;
             _navigation = navigation;
-            LoadSubjects();
         }
 
-        public void LoadSubjects()
+        public async Task LoadAsync()
         {
             Subjects.Clear();
-            foreach (var subject in _academicService.GetAllSubjects())
+            var items = await _academicService.GetAllSubjectsAsync();
+            foreach (var subject in items)
             {
                 Subjects.Add(subject);
             }

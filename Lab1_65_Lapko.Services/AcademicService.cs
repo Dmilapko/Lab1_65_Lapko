@@ -15,9 +15,10 @@ namespace Lab1_65_Lapko.Services
             _sessionRepository = sessionRepository;
         }
 
-        public List<SubjectListDto> GetAllSubjects()
+        public async Task<List<SubjectListDto>> GetAllSubjectsAsync()
         {
-            return _subjectRepository.GetAll()
+            var subjects = await _subjectRepository.GetAllAsync();
+            return subjects
                 .Select(e => new SubjectListDto
                 {
                     Id = e.Id,
@@ -28,12 +29,12 @@ namespace Lab1_65_Lapko.Services
                 .ToList();
         }
 
-        public SubjectDetailDto? GetSubjectDetail(Guid id)
+        public async Task<SubjectDetailDto?> GetSubjectDetailAsync(Guid id)
         {
-            var entity = _subjectRepository.GetById(id);
+            var entity = await _subjectRepository.GetByIdAsync(id);
             if (entity == null) return null;
 
-            var sessions = _sessionRepository.GetBySubjectId(id);
+            var sessions = await _sessionRepository.GetBySubjectIdAsync(id);
             var sessionDtos = sessions.Select(MapToSessionListDto).ToList();
 
             var totalDuration = TimeSpan.Zero;
@@ -53,9 +54,37 @@ namespace Lab1_65_Lapko.Services
             };
         }
 
-        public SessionDetailDto? GetSessionDetail(Guid id)
+        public async Task AddSubjectAsync(SubjectInputDto input)
         {
-            var entity = _sessionRepository.GetById(id);
+            var entity = new SubjectEntity
+            {
+                Name = input.Name,
+                EctsCredits = input.EctsCredits,
+                Area = ParseKnowledgeArea(input.Area)
+            };
+            await _subjectRepository.AddAsync(entity);
+        }
+
+        public async Task<bool> UpdateSubjectAsync(Guid id, SubjectInputDto input)
+        {
+            var existing = await _subjectRepository.GetByIdAsync(id);
+            if (existing == null) return false;
+
+            var updated = new SubjectEntity
+            {
+                Id = existing.Id,
+                Name = input.Name,
+                EctsCredits = input.EctsCredits,
+                Area = ParseKnowledgeArea(input.Area)
+            };
+            return await _subjectRepository.UpdateAsync(updated);
+        }
+
+        public Task<bool> DeleteSubjectAsync(Guid id) => _subjectRepository.DeleteAsync(id);
+
+        public async Task<SessionDetailDto?> GetSessionDetailAsync(Guid id)
+        {
+            var entity = await _sessionRepository.GetByIdAsync(id);
             if (entity == null) return null;
 
             return new SessionDetailDto
@@ -71,7 +100,41 @@ namespace Lab1_65_Lapko.Services
             };
         }
 
-        private SessionListDto MapToSessionListDto(SessionEntity entity)
+        public async Task AddSessionAsync(SessionInputDto input)
+        {
+            var entity = new SessionEntity
+            {
+                SubjectId = input.SubjectId,
+                Topic = input.Topic,
+                Type = ParseSessionType(input.Type),
+                Date = input.Date,
+                StartTime = input.StartTime,
+                EndTime = input.EndTime
+            };
+            await _sessionRepository.AddAsync(entity);
+        }
+
+        public async Task<bool> UpdateSessionAsync(Guid id, SessionInputDto input)
+        {
+            var existing = await _sessionRepository.GetByIdAsync(id);
+            if (existing == null) return false;
+
+            var updated = new SessionEntity
+            {
+                Id = existing.Id,
+                SubjectId = input.SubjectId,
+                Topic = input.Topic,
+                Type = ParseSessionType(input.Type),
+                Date = input.Date,
+                StartTime = input.StartTime,
+                EndTime = input.EndTime
+            };
+            return await _sessionRepository.UpdateAsync(updated);
+        }
+
+        public Task<bool> DeleteSessionAsync(Guid id) => _sessionRepository.DeleteAsync(id);
+
+        private static SessionListDto MapToSessionListDto(SessionEntity entity)
         {
             return new SessionListDto
             {
@@ -82,6 +145,20 @@ namespace Lab1_65_Lapko.Services
                 StartTime = entity.StartTime,
                 EndTime = entity.EndTime
             };
+        }
+
+        private static KnowledgeArea ParseKnowledgeArea(string value)
+        {
+            return Enum.TryParse<KnowledgeArea>(value, ignoreCase: true, out var parsed)
+                ? parsed
+                : KnowledgeArea.Engineering;
+        }
+
+        private static SessionType ParseSessionType(string value)
+        {
+            return Enum.TryParse<SessionType>(value, ignoreCase: true, out var parsed)
+                ? parsed
+                : SessionType.Lecture;
         }
     }
 }
