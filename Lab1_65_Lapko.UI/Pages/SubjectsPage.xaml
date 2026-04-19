@@ -2,7 +2,13 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="Lab1_65_Lapko.UI.Pages.SubjectsPage"
+             x:Name="ThisPage"
              Title="Subjects">
+
+    <ContentPage.ToolbarItems>
+        <ToolbarItem Text="Add" Command="{Binding AddCommand}" />
+    </ContentPage.ToolbarItems>
+
     <Grid>
         <CollectionView ItemsSource="{Binding Subjects}"
                         SelectedItem="{Binding SelectedSubject, Mode=TwoWay}"
@@ -13,13 +19,25 @@
                     <Border Stroke="LightGray" StrokeThickness="1"
                             Padding="12" Margin="8,4"
                             StrokeShape="RoundRectangle 8">
-                        <VerticalStackLayout Spacing="4">
-                            <Label Text="{Binding Name}" FontSize="18" FontAttributes="Bold" />
-                            <HorizontalStackLayout Spacing="12">
-                                <Label Text="{Binding EctsCredits, StringFormat='ECTS: {0}'}" FontSize="14" />
-                                <Label Text="{Binding Area}" FontSize="14" TextColor="Gray" />
-                            </HorizontalStackLayout>
-                        </VerticalStackLayout>
+                        <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="8">
+                            <VerticalStackLayout Grid.Column="0" Spacing="4">
+                                <Label Text="{Binding Name}" FontSize="18" FontAttributes="Bold" />
+                                <HorizontalStackLayout Spacing="12">
+                                    <Label Text="{Binding EctsCredits, StringFormat='ECTS: {0}'}" FontSize="14" />
+                                    <Label Text="{Binding Area}" FontSize="14" TextColor="Gray" />
+                                </HorizontalStackLayout>
+                            </VerticalStackLayout>
+                            <Button Grid.Column="1" Text="Edit"
+                                    VerticalOptions="Center"
+                                    Command="{Binding Source={x:Reference ThisPage}, Path=BindingContext.EditCommand}"
+                                    CommandParameter="{Binding}" />
+                            <Button Grid.Column="2" Text="Delete"
+                                    VerticalOptions="Center"
+                                    BackgroundColor="IndianRed"
+                                    TextColor="White"
+                                    Command="{Binding Source={x:Reference ThisPage}, Path=BindingContext.DeleteCommand}"
+                                    CommandParameter="{Binding}" />
+                        </Grid>
                     </Border>
                 </DataTemplate>
             </CollectionView.ItemTemplate>
