@@ -1,6 +1,8 @@
 using System.Collections.ObjectModel;
+using System.Windows.Input;
 using Lab1_65_Lapko.Services;
 using Lab1_65_Lapko.Services.DTOs;
+using Lab1_65_Lapko.UI.Helpers;
 
 namespace Lab1_65_Lapko.UI.ViewModels
 {
@@ -38,11 +40,19 @@ namespace Lab1_65_Lapko.UI.ViewModels
             }
         }
 
+        public ICommand AddSessionCommand { get; }
+        public ICommand EditSessionCommand { get; }
+        public ICommand DeleteSessionCommand { get; }
+
         public SubjectDetailViewModel(IAcademicService academicService, INavigation navigation, Guid subjectId)
         {
             _academicService = academicService;
             _navigation = navigation;
             _subjectId = subjectId;
+
+            AddSessionCommand = new AsyncRelayCommand(AddSessionAsync);
+            EditSessionCommand = new AsyncRelayCommand<SessionListDto>(EditSessionAsync);
+            DeleteSessionCommand = new AsyncRelayCommand<SessionListDto>(DeleteSessionAsync);
         }
 
         public async Task LoadAsync()
@@ -65,6 +75,45 @@ namespace Lab1_65_Lapko.UI.ViewModels
                 {
                     Sessions.Add(session);
                 }
+            }
+            finally
+            {
+                IsBusy = false;
+            }
+        }
+
+        private Task AddSessionAsync()
+        {
+            var page = new Pages.SessionEditPage(_academicService, _subjectId, null);
+            return _navigation.PushAsync(page);
+        }
+
+        private Task EditSessionAsync(SessionListDto? session)
+        {
+            if (session == null) return Task.CompletedTask;
+            var page = new Pages.SessionEditPage(_academicService, _subjectId, session.Id);
+            return _navigation.PushAsync(page);
+        }
+
+        private async Task DeleteSessionAsync(SessionListDto? session)
+        {
+            if (session == null) return;
+
+            var page = Application.Current?.Windows[0]?.Page;
+            if (page == null) return;
+
+            var confirm = await page.DisplayAlert(
+                "Delete Session",
+                $"Delete session \"{session.Topic}\"?",
+                "Delete", "Cancel");
+            if (!confirm) return;
+
+            if (IsBusy) return;
+            IsBusy = true;
+            try
+            {
+                await _academicService.DeleteSessionAsync(session.Id);
+                Sessions.Remove(session);
             }
             finally
             {

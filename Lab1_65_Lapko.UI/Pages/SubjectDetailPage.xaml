@@ -2,7 +2,13 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="Lab1_65_Lapko.UI.Pages.SubjectDetailPage"
+             x:Name="ThisPage"
              Title="Subject Details">
+
+    <ContentPage.ToolbarItems>
+        <ToolbarItem Text="Add Session" Command="{Binding AddSessionCommand}" />
+    </ContentPage.ToolbarItems>
+
     <Grid>
         <ScrollView IsEnabled="{Binding IsNotBusy}">
             <VerticalStackLayout Padding="16" Spacing="8">
@@ -23,15 +29,27 @@
                             <Border Stroke="LightGray" StrokeThickness="1"
                                     Padding="12" Margin="0,4"
                                     StrokeShape="RoundRectangle 8">
-                                <VerticalStackLayout Spacing="2">
-                                    <Label Text="{Binding Topic}" FontSize="16" FontAttributes="Bold" />
-                                    <HorizontalStackLayout Spacing="12">
-                                        <Label Text="{Binding Type}" FontSize="14" TextColor="Gray" />
-                                        <Label Text="{Binding Date, StringFormat='{0:yyyy-MM-dd}'}" FontSize="14" />
-                                        <Label Text="{Binding StartTime, StringFormat='{0:HH:mm}'}" FontSize="14" />
-                                        <Label Text="{Binding EndTime, StringFormat='- {0:HH:mm}'}" FontSize="14" />
-                                    </HorizontalStackLayout>
-                                </VerticalStackLayout>
+                                <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="8">
+                                    <VerticalStackLayout Grid.Column="0" Spacing="2">
+                                        <Label Text="{Binding Topic}" FontSize="16" FontAttributes="Bold" />
+                                        <HorizontalStackLayout Spacing="12">
+                                            <Label Text="{Binding Type}" FontSize="14" TextColor="Gray" />
+                                            <Label Text="{Binding Date, StringFormat='{0:yyyy-MM-dd}'}" FontSize="14" />
+                                            <Label Text="{Binding StartTime, StringFormat='{0:HH:mm}'}" FontSize="14" />
+                                            <Label Text="{Binding EndTime, StringFormat='- {0:HH:mm}'}" FontSize="14" />
+                                        </HorizontalStackLayout>
+                                    </VerticalStackLayout>
+                                    <Button Grid.Column="1" Text="Edit"
+                                            VerticalOptions="Center"
+                                            Command="{Binding Source={x:Reference ThisPage}, Path=BindingContext.EditSessionCommand}"
+                                            CommandParameter="{Binding}" />
+                                    <Button Grid.Column="2" Text="Delete"
+                                            VerticalOptions="Center"
+                                            BackgroundColor="IndianRed"
+                                            TextColor="White"
+                                            Command="{Binding Source={x:Reference ThisPage}, Path=BindingContext.DeleteSessionCommand}"
+                                            CommandParameter="{Binding}" />
+                                </Grid>
                             </Border>
                         </DataTemplate>
                     </CollectionView.ItemTemplate>
