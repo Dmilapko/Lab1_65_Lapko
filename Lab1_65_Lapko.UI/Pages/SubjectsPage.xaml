@@ -3,23 +3,33 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="Lab1_65_Lapko.UI.Pages.SubjectsPage"
              Title="Subjects">
-    <CollectionView ItemsSource="{Binding Subjects}"
-                    SelectedItem="{Binding SelectedSubject, Mode=TwoWay}"
-                    SelectionMode="Single">
-        <CollectionView.ItemTemplate>
-            <DataTemplate>
-                <Border Stroke="LightGray" StrokeThickness="1"
-                        Padding="12" Margin="8,4"
-                        StrokeShape="RoundRectangle 8">
-                    <VerticalStackLayout Spacing="4">
-                        <Label Text="{Binding Name}" FontSize="18" FontAttributes="Bold" />
-                        <HorizontalStackLayout Spacing="12">
-                            <Label Text="{Binding EctsCredits, StringFormat='ECTS: {0}'}" FontSize="14" />
-                            <Label Text="{Binding Area}" FontSize="14" TextColor="Gray" />
-                        </HorizontalStackLayout>
-                    </VerticalStackLayout>
-                </Border>
-            </DataTemplate>
-        </CollectionView.ItemTemplate>
-    </CollectionView>
+    <Grid>
+        <CollectionView ItemsSource="{Binding Subjects}"
+                        SelectedItem="{Binding SelectedSubject, Mode=TwoWay}"
+                        SelectionMode="Single"
+                        IsEnabled="{Binding IsNotBusy}">
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <Border Stroke="LightGray" StrokeThickness="1"
+                            Padding="12" Margin="8,4"
+                            StrokeShape="RoundRectangle 8">
+                        <VerticalStackLayout Spacing="4">
+                            <Label Text="{Binding Name}" FontSize="18" FontAttributes="Bold" />
+                            <HorizontalStackLayout Spacing="12">
+                                <Label Text="{Binding EctsCredits, StringFormat='ECTS: {0}'}" FontSize="14" />
+                                <Label Text="{Binding Area}" FontSize="14" TextColor="Gray" />
+                            </HorizontalStackLayout>
+                        </VerticalStackLayout>
+                    </Border>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+
+        <ActivityIndicator IsRunning="{Binding IsBusy}"
+                           IsVisible="{Binding IsBusy}"
+                           Color="DodgerBlue"
+                           WidthRequest="48" HeightRequest="48"
+                           VerticalOptions="Center"
+                           HorizontalOptions="Center" />
+    </Grid>
 </ContentPage>

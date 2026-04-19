@@ -33,11 +33,20 @@ namespace Lab1_65_Lapko.UI.ViewModels
 
         public async Task LoadAsync()
         {
-            Subjects.Clear();
-            var items = await _academicService.GetAllSubjectsAsync();
-            foreach (var subject in items)
+            if (IsBusy) return;
+            IsBusy = true;
+            try
             {
-                Subjects.Add(subject);
+                Subjects.Clear();
+                var items = await _academicService.GetAllSubjectsAsync();
+                foreach (var subject in items)
+                {
+                    Subjects.Add(subject);
+                }
+            }
+            finally
+            {
+                IsBusy = false;
             }
         }
 

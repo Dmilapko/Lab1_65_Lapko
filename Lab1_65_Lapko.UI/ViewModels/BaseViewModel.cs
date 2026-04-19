@@ -5,7 +5,23 @@ namespace Lab1_65_Lapko.UI.ViewModels
 {
     public class BaseViewModel : INotifyPropertyChanged
     {
+        private bool _isBusy;
+
         public event PropertyChangedEventHandler? PropertyChanged;
+
+        public bool IsBusy
+        {
+            get => _isBusy;
+            set
+            {
+                if (SetProperty(ref _isBusy, value))
+                {
+                    OnPropertyChanged(nameof(IsNotBusy));
+                }
+            }
+        }
+
+        public bool IsNotBusy => !_isBusy;
 
         protected void OnPropertyChanged([CallerMemberName] string? propertyName = null)
         {

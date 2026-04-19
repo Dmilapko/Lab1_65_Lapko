@@ -31,16 +31,25 @@ namespace Lab1_65_Lapko.UI.ViewModels
 
         public async Task LoadAsync()
         {
-            var detail = await _academicService.GetSessionDetailAsync(_sessionId);
-            if (detail == null) return;
+            if (IsBusy) return;
+            IsBusy = true;
+            try
+            {
+                var detail = await _academicService.GetSessionDetailAsync(_sessionId);
+                if (detail == null) return;
 
-            Id = detail.Id;
-            Topic = detail.Topic;
-            Type = detail.Type;
-            Date = detail.Date;
-            StartTime = detail.StartTime;
-            EndTime = detail.EndTime;
-            Duration = detail.Duration;
+                Id = detail.Id;
+                Topic = detail.Topic;
+                Type = detail.Type;
+                Date = detail.Date;
+                StartTime = detail.StartTime;
+                EndTime = detail.EndTime;
+                Duration = detail.Duration;
+            }
+            finally
+            {
+                IsBusy = false;
+            }
         }
     }
 }

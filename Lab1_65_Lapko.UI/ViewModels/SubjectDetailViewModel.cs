@@ -47,19 +47,28 @@ namespace Lab1_65_Lapko.UI.ViewModels
 
         public async Task LoadAsync()
         {
-            var detail = await _academicService.GetSubjectDetailAsync(_subjectId);
-            if (detail == null) return;
-
-            Id = detail.Id;
-            Name = detail.Name;
-            EctsCredits = detail.EctsCredits;
-            Area = detail.Area;
-            TotalDuration = detail.TotalDuration;
-
-            Sessions.Clear();
-            foreach (var session in detail.Sessions)
+            if (IsBusy) return;
+            IsBusy = true;
+            try
             {
-                Sessions.Add(session);
+                var detail = await _academicService.GetSubjectDetailAsync(_subjectId);
+                if (detail == null) return;
+
+                Id = detail.Id;
+                Name = detail.Name;
+                EctsCredits = detail.EctsCredits;
+                Area = detail.Area;
+                TotalDuration = detail.TotalDuration;
+
+                Sessions.Clear();
+                foreach (var session in detail.Sessions)
+                {
+                    Sessions.Add(session);
+                }
+            }
+            finally
+            {
+                IsBusy = false;
             }
         }
 

@@ -3,12 +3,22 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="Lab1_65_Lapko.UI.Pages.SessionDetailPage"
              Title="Session Details">
-    <VerticalStackLayout Padding="16" Spacing="10">
-        <Label Text="{Binding Topic}" FontSize="24" FontAttributes="Bold" />
-        <Label Text="{Binding Type, StringFormat='Type: {0}'}" FontSize="16" />
-        <Label Text="{Binding Date, StringFormat='Date: {0:yyyy-MM-dd}'}" FontSize="16" />
-        <Label Text="{Binding StartTime, StringFormat='Start: {0:HH:mm}'}" FontSize="16" />
-        <Label Text="{Binding EndTime, StringFormat='End: {0:HH:mm}'}" FontSize="16" />
-        <Label Text="{Binding Duration, StringFormat='Duration: {0}'}" FontSize="16" />
-    </VerticalStackLayout>
+    <Grid>
+        <VerticalStackLayout Padding="16" Spacing="10"
+                             IsEnabled="{Binding IsNotBusy}">
+            <Label Text="{Binding Topic}" FontSize="24" FontAttributes="Bold" />
+            <Label Text="{Binding Type, StringFormat='Type: {0}'}" FontSize="16" />
+            <Label Text="{Binding Date, StringFormat='Date: {0:yyyy-MM-dd}'}" FontSize="16" />
+            <Label Text="{Binding StartTime, StringFormat='Start: {0:HH:mm}'}" FontSize="16" />
+            <Label Text="{Binding EndTime, StringFormat='End: {0:HH:mm}'}" FontSize="16" />
+            <Label Text="{Binding Duration, StringFormat='Duration: {0}'}" FontSize="16" />
+        </VerticalStackLayout>
+
+        <ActivityIndicator IsRunning="{Binding IsBusy}"
+                           IsVisible="{Binding IsBusy}"
+                           Color="DodgerBlue"
+                           WidthRequest="48" HeightRequest="48"
+                           VerticalOptions="Center"
+                           HorizontalOptions="Center" />
+    </Grid>
 </ContentPage>

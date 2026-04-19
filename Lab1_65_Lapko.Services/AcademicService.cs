@@ -17,6 +17,7 @@ namespace Lab1_65_Lapko.Services
 
         public async Task<List<SubjectListDto>> GetAllSubjectsAsync()
         {
+            await Task.Delay(250);
             var subjects = await _subjectRepository.GetAllAsync();
             return subjects
                 .Select(e => new SubjectListDto
@@ -31,6 +32,7 @@ namespace Lab1_65_Lapko.Services
 
         public async Task<SubjectDetailDto?> GetSubjectDetailAsync(Guid id)
         {
+            await Task.Delay(250);
             var entity = await _subjectRepository.GetByIdAsync(id);
             if (entity == null) return null;
 
@@ -84,6 +86,7 @@ namespace Lab1_65_Lapko.Services
 
         public async Task<SessionDetailDto?> GetSessionDetailAsync(Guid id)
         {
+            await Task.Delay(250);
             var entity = await _sessionRepository.GetByIdAsync(id);
             if (entity == null) return null;
 
