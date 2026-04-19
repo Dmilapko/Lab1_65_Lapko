@@ -8,6 +8,13 @@ namespace Lab1_65_Lapko.UI.ViewModels
 {
     public class SubjectDetailViewModel : BaseViewModel
     {
+        private static readonly string[] SortOptionsList =
+        {
+            "Topic (A-Z)", "Topic (Z-A)",
+            "Type (A-Z)", "Type (Z-A)",
+            "Date (Earliest)", "Date (Latest)"
+        };
+
         private readonly IAcademicService _academicService;
         private readonly INavigation _navigation;
         private readonly Guid _subjectId;
@@ -19,6 +26,10 @@ namespace Lab1_65_Lapko.UI.ViewModels
         private TimeSpan _totalDuration;
         private SessionListDto? _selectedSession;
 
+        private List<SessionListDto> _allSessions = new();
+        private string _searchText = string.Empty;
+        private string _sortOption = SortOptionsList[4];
+
         public Guid Id { get => _id; private set => SetProperty(ref _id, value); }
         public string Name { get => _name; private set => SetProperty(ref _name, value); }
         public int EctsCredits { get => _ectsCredits; private set => SetProperty(ref _ectsCredits, value); }
@@ -26,6 +37,27 @@ namespace Lab1_65_Lapko.UI.ViewModels
         public TimeSpan TotalDuration { get => _totalDuration; private set => SetProperty(ref _totalDuration, value); }
 
         public ObservableCollection<SessionListDto> Sessions { get; } = new();
+        public ObservableCollection<string> SortOptions { get; } = new(SortOptionsList);
+
+        public string SearchText
+        {
+            get => _searchText;
+            set
+            {
+                if (SetProperty(ref _searchText, value))
+                    ApplyFilterAndSort();
+            }
+        }
+
+        public string SortOption
+        {
+            get => _sortOption;
+            set
+            {
+                if (SetProperty(ref _sortOption, value))
+                    ApplyFilterAndSort();
+            }
+        }
 
         public SessionListDto? SelectedSession
         {
@@ -70,16 +102,41 @@ namespace Lab1_65_Lapko.UI.ViewModels
                 Area = detail.Area;
                 TotalDuration = detail.TotalDuration;
 
-                Sessions.Clear();
-                foreach (var session in detail.Sessions)
-                {
-                    Sessions.Add(session);
-                }
+                _allSessions = detail.Sessions.ToList();
+                ApplyFilterAndSort();
             }
             finally
             {
                 IsBusy = false;
             }
+        }
+
+        private void ApplyFilterAndSort()
+        {
+            IEnumerable<SessionListDto> query = _allSessions;
+
+            if (!string.IsNullOrWhiteSpace(_searchText))
+            {
+                var term = _searchText.Trim();
+                query = query.Where(s =>
+                    s.Topic.Contains(term, StringComparison.OrdinalIgnoreCase) ||
+                    s.Type.Contains(term, StringComparison.OrdinalIgnoreCase));
+            }
+
+            query = _sortOption switch
+            {
+                "Topic (A-Z)" => query.OrderBy(s => s.Topic),
+                "Topic (Z-A)" => query.OrderByDescending(s => s.Topic),
+                "Type (A-Z)" => query.OrderBy(s => s.Type),
+                "Type (Z-A)" => query.OrderByDescending(s => s.Type),
+                "Date (Earliest)" => query.OrderBy(s => s.Date).ThenBy(s => s.StartTime),
+                "Date (Latest)" => query.OrderByDescending(s => s.Date).ThenByDescending(s => s.StartTime),
+                _ => query
+            };
+
+            Sessions.Clear();
+            foreach (var s in query)
+                Sessions.Add(s);
         }
 
         private Task AddSessionAsync()
@@ -113,6 +170,7 @@ namespace Lab1_65_Lapko.UI.ViewModels
             try
             {
                 await _academicService.DeleteSessionAsync(session.Id);
+                _allSessions.RemoveAll(s => s.Id == session.Id);
                 Sessions.Remove(session);
             }
             finally

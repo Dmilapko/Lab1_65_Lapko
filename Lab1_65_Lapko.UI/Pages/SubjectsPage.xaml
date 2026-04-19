@@ -9,45 +9,56 @@
         <ToolbarItem Text="Add" Command="{Binding AddCommand}" />
     </ContentPage.ToolbarItems>
 
-    <Grid>
-        <CollectionView ItemsSource="{Binding Subjects}"
-                        SelectedItem="{Binding SelectedSubject, Mode=TwoWay}"
-                        SelectionMode="Single"
-                        IsEnabled="{Binding IsNotBusy}">
-            <CollectionView.ItemTemplate>
-                <DataTemplate>
-                    <Border Stroke="LightGray" StrokeThickness="1"
-                            Padding="12" Margin="8,4"
-                            StrokeShape="RoundRectangle 8">
-                        <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="8">
-                            <VerticalStackLayout Grid.Column="0" Spacing="4">
-                                <Label Text="{Binding Name}" FontSize="18" FontAttributes="Bold" />
-                                <HorizontalStackLayout Spacing="12">
-                                    <Label Text="{Binding EctsCredits, StringFormat='ECTS: {0}'}" FontSize="14" />
-                                    <Label Text="{Binding Area}" FontSize="14" TextColor="Gray" />
-                                </HorizontalStackLayout>
-                            </VerticalStackLayout>
-                            <Button Grid.Column="1" Text="Edit"
-                                    VerticalOptions="Center"
-                                    Command="{Binding Source={x:Reference ThisPage}, Path=BindingContext.EditCommand}"
-                                    CommandParameter="{Binding}" />
-                            <Button Grid.Column="2" Text="Delete"
-                                    VerticalOptions="Center"
-                                    BackgroundColor="IndianRed"
-                                    TextColor="White"
-                                    Command="{Binding Source={x:Reference ThisPage}, Path=BindingContext.DeleteCommand}"
-                                    CommandParameter="{Binding}" />
-                        </Grid>
-                    </Border>
-                </DataTemplate>
-            </CollectionView.ItemTemplate>
-        </CollectionView>
+    <Grid RowDefinitions="Auto,*">
+        <Grid Grid.Row="0" ColumnDefinitions="*,Auto" ColumnSpacing="8" Padding="8">
+            <Entry Grid.Column="0" Placeholder="Search by name or area"
+                   Text="{Binding SearchText}" />
+            <Picker Grid.Column="1" Title="Sort by"
+                    WidthRequest="180"
+                    ItemsSource="{Binding SortOptions}"
+                    SelectedItem="{Binding SortOption}" />
+        </Grid>
 
-        <ActivityIndicator IsRunning="{Binding IsBusy}"
-                           IsVisible="{Binding IsBusy}"
-                           Color="DodgerBlue"
-                           WidthRequest="48" HeightRequest="48"
-                           VerticalOptions="Center"
-                           HorizontalOptions="Center" />
+        <Grid Grid.Row="1">
+            <CollectionView ItemsSource="{Binding Subjects}"
+                            SelectedItem="{Binding SelectedSubject, Mode=TwoWay}"
+                            SelectionMode="Single"
+                            IsEnabled="{Binding IsNotBusy}">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <Border Stroke="LightGray" StrokeThickness="1"
+                                Padding="12" Margin="8,4"
+                                StrokeShape="RoundRectangle 8">
+                            <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="8">
+                                <VerticalStackLayout Grid.Column="0" Spacing="4">
+                                    <Label Text="{Binding Name}" FontSize="18" FontAttributes="Bold" />
+                                    <HorizontalStackLayout Spacing="12">
+                                        <Label Text="{Binding EctsCredits, StringFormat='ECTS: {0}'}" FontSize="14" />
+                                        <Label Text="{Binding Area}" FontSize="14" TextColor="Gray" />
+                                    </HorizontalStackLayout>
+                                </VerticalStackLayout>
+                                <Button Grid.Column="1" Text="Edit"
+                                        VerticalOptions="Center"
+                                        Command="{Binding Source={x:Reference ThisPage}, Path=BindingContext.EditCommand}"
+                                        CommandParameter="{Binding}" />
+                                <Button Grid.Column="2" Text="Delete"
+                                        VerticalOptions="Center"
+                                        BackgroundColor="IndianRed"
+                                        TextColor="White"
+                                        Command="{Binding Source={x:Reference ThisPage}, Path=BindingContext.DeleteCommand}"
+                                        CommandParameter="{Binding}" />
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+
+            <ActivityIndicator IsRunning="{Binding IsBusy}"
+                               IsVisible="{Binding IsBusy}"
+                               Color="DodgerBlue"
+                               WidthRequest="48" HeightRequest="48"
+                               VerticalOptions="Center"
+                               HorizontalOptions="Center" />
+        </Grid>
     </Grid>
 </ContentPage>
